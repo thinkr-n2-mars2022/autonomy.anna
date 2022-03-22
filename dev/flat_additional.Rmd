@@ -7,6 +7,10 @@ editor_options:
 
 ```{r development, include=FALSE}
 library(testthat)
+library(assertthat)
+library(glue)
+library(readr)
+
 ```
 
 ```{r development-1}

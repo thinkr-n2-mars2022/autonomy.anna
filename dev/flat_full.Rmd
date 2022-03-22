@@ -10,6 +10,33 @@ editor_options:
 
 ```{r development, include=FALSE}
 library(testthat)
+library(assertthat)
+library(glue)
+library(readr)
+library(fusen)
+library(dplyr)
+library(stringr)
+
+#data <- nyc_squirrels
+path <- 'inst/nyc_squirrels_sample.csv'
+file.exists(path)
+
+
+assert_that(has_extension(path, 'csv'))
+assert_that(is.dir(dirname(path)))
+assert_that(is.readable(dirname(path)))
+data <- read_csv(path)
+assert_that(is.data.frame(data))
+col <- "combination_of_primary_and_highlight_color"
+assert_that(is.character(col))
+
+data %>%
+  select({{col}}) %>%
+  
+
+str_extract_all(data$combination_of_primary_and_highlight_color, pattern = "[A-Z,a-z]+", simplify = TRUE)
+
+
 ```
 
 <!--
@@ -59,21 +86,32 @@ After inflating the template
 
 -  This function code will be added in a new file in the "R/" directory
 -->
-
-```{r function}
-#' My median
+# check_data_integrity function
+This function allows the user to check the integrity of a provided dataset. First checks if the the extension of the filename is csv and the directory provided exists and is readable. Then it checks whether the dataset provided is a data frame and makes specific checks per column, as specified by the user.
+```{r check_data_integrity}
+#' check_data_integrity A function to check the integrity of a dataset, for the provided path, dataset class and included variables/columns.
 #'
-#' @param x Vector of Numeric values
-#' @inheritParams stats::median
+#' @param path a path where the file is stored, it includes the filename (type = character)
+#' @param col a column name to make the checks on
+#' @importFrom glue glue
+#' @importFrom assertthat assert_that has_extension is.readable is.dir
+#' @importFrom readr write_csv
 #'
-#' @return
-#' Median of vector x
+#' @return A message with an error if any of the conditions are not true, or with a confirmation that the checks for the column are successful.
 #' @export
 #'
 #' @examples
-my_median <- function(x, na.rm = TRUE) {
-  if (!is.numeric(x)) {stop("x should be numeric")}
-  stats::median(x, na.rm = na.rm)
+check_data_integrity <- function(path = file.path('inst/nyc_squirrels_sample.csv'), col = "primary_fur_color") {
+  file.exists(path)
+  assert_that(has_extension(path, 'csv'))
+  assert_that(is.dir(dirname(path)))
+  assert_that(is.readable(dirname(path)))
+  data <- read_csv(path)
+  assert_that(is.data.frame(data))
+  assert_that(is.character(col))
+  
+  
+  
 }
 ```
 
